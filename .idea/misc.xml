@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../.gradle/caches/transforms-3/e01dfedf22c4fb14d989265ba7bf9da9/transformed/zxing-android-embedded-4.3.0/res/layout/zxing_capture.xml" value="0.19270833333333334" />
+        <entry key="app/src/main/res/layout-w1240dp/activity_login.xml" value="0.2605442176870748" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.3692708333333333" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.17447916666666666" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.3692708333333333" />
+        <entry key="app/src/main/res/layout/activity_scan.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/custom_barcode_scan.xml" value="0.19270833333333334" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

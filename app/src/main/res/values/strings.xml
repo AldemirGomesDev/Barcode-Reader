@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Barcode Reader</string>
+    <string name="image_flash">image flash</string>
+    <string name="capture">Capture</string>
+
+    <string name="turn_on_flashlight">Turn on Flashlight</string>
+    <string name="turn_off_flashlight">Turn off Flashlight</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Login</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="text_barcode">Código de barras</string>
+    <string name="text_button_enter_barcode">Digitar Código</string>
+    <string name="text_quantities">Quantidade</string>
+    <string name="text_button_register">Registrar</string>
+    <string name="invalid_barcode">O Barcode precisa ter mais de 5 caracteres</string>
+    <string name="invalid_input">A quantidade é obrigatória</string>
+    <string name="message_scan">Posicione o código de barras no leitor</string>
+</resources>
