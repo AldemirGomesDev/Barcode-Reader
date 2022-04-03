@@ -1,9 +1,7 @@
-package com.aldemir.barcodereader.api
+package com.aldemir.barcodereader.data.api
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.aldemir.barcodereader.MyApplication

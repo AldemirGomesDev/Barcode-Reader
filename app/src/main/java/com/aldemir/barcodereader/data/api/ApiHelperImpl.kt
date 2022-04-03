@@ -1,8 +1,6 @@
-package com.aldemir.barcodereader.api
+package com.aldemir.barcodereader.data.api
 
-import com.aldemir.barcodereader.api.models.*
-import com.aldemir.barcodereader.api.util.BaseResponse
-import com.aldemir.barcodereader.data.Resource
+import com.aldemir.barcodereader.data.api.models.*
 import retrofit2.Response
 import javax.inject.Inject
 

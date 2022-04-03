@@ -1,4 +1,4 @@
-package com.aldemir.barcodereader.api.util
+package com.aldemir.barcodereader.data.api.util
 
 import retrofit2.Response
 import java.net.HttpURLConnection

@@ -1,9 +1,9 @@
 package com.aldemir.barcodereader.data.repository
 
-import com.aldemir.barcodereader.api.ApiHelper
-import com.aldemir.barcodereader.api.models.toCheckCount
-import com.aldemir.barcodereader.api.util.Output
-import com.aldemir.barcodereader.api.util.parseResponse
+import com.aldemir.barcodereader.data.api.ApiHelper
+import com.aldemir.barcodereader.data.api.models.toCheckCount
+import com.aldemir.barcodereader.data.api.util.Output
+import com.aldemir.barcodereader.data.api.util.parseResponse
 import com.aldemir.barcodereader.domain.model.CheckCount
 import com.aldemir.barcodereader.util.LogUtils
 import javax.inject.Inject

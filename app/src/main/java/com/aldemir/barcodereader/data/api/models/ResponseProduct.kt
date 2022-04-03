@@ -1,4 +1,4 @@
-package com.aldemir.barcodereader.api.models
+package com.aldemir.barcodereader.data.api.models
 
 data class ResponseProduct(
     var code: String = "",
