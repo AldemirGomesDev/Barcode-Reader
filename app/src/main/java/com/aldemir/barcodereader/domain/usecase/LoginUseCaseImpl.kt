@@ -1,7 +1,7 @@
 package com.aldemir.barcodereader.domain.usecase
 
 import com.aldemir.barcodereader.api.models.RequestLogin
-import com.aldemir.barcodereader.data.LoginRepository
+import com.aldemir.barcodereader.data.repository.LoginRepository
 import com.aldemir.barcodereader.ui.model.UserLogged
 import javax.inject.Inject
 

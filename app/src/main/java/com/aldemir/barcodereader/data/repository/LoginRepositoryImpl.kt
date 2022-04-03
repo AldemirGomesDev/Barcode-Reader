@@ -1,14 +1,12 @@
-package com.aldemir.barcodereader.data
+package com.aldemir.barcodereader.data.repository
 
 import com.aldemir.barcodereader.api.ApiHelper
-import com.aldemir.barcodereader.api.ApiService
 import com.aldemir.barcodereader.api.models.RequestLogin
-import com.aldemir.barcodereader.api.models.ResponseLogin
 import com.aldemir.barcodereader.api.models.toUserLogged
-import com.aldemir.barcodereader.data.model.LoggedInUser
+import com.aldemir.barcodereader.api.util.Output
+import com.aldemir.barcodereader.api.util.parseResponse
 import com.aldemir.barcodereader.ui.model.UserLogged
 import com.aldemir.barcodereader.util.LogUtils
-import com.aldemir.barcodereader.util.Status
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
@@ -16,17 +14,13 @@ class LoginRepositoryImpl @Inject constructor(
     ) : LoginRepository {
 
     override suspend fun login(requestLogin: RequestLogin): UserLogged? {
-        var userLogged: UserLogged? = null
-        val response = apiHelper.login(requestLogin)
-        if (response.isSuccessful) {
-            if (response.body() != null) {
-                userLogged = response.body()!!.data!!.toUserLogged()
+        return when (val result = apiHelper.login(requestLogin).parseResponse()) {
+            is Output.Success -> {
+                LogUtils.debug(message = "response -> ${result.value}")
+                result.value.toUserLogged()
             }
-        } else {
-            LogUtils.error(message = response.message())
+            is Output.Failure -> UserLogged(statusCode = result.statusCode)
         }
-
-        return userLogged
     }
 }
 

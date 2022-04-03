@@ -1,5 +1,7 @@
 package com.aldemir.barcodereader.domain.di
 
+import com.aldemir.barcodereader.domain.usecase.CheckCountUseCase
+import com.aldemir.barcodereader.domain.usecase.CheckCountUseCaseImpl
 import com.aldemir.barcodereader.domain.usecase.LoginUseCase
 import com.aldemir.barcodereader.domain.usecase.LoginUseCaseImpl
 import dagger.Binds
@@ -14,4 +16,7 @@ interface DomainModule {
 
     @Binds
     fun bindLoginUseCase(useCase: LoginUseCaseImpl) : LoginUseCase
+
+    @Binds
+    fun bindCheckCountUseCase(useCase: CheckCountUseCaseImpl) : CheckCountUseCase
 }

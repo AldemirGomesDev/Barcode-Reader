@@ -6,11 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.MainActivity">
 
-    <Button
-        android:id="@+id/btn_capture"
-        android:text="@string/capture"
-        android:textColor="#FFF"
-        android:textAllCaps="false"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_start_counting"
+        android:text="@string/start_counting"
+        android:textAllCaps="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +26,17 @@
         android:text="Sair"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_capture" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_start_counting" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_start_counting"
+        app:layout_constraintEnd_toEndOf="@+id/btn_start_counting"
+        app:layout_constraintStart_toStartOf="@+id/btn_start_counting"
+        app:layout_constraintTop_toTopOf="@id/btn_start_counting" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

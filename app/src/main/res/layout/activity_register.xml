@@ -4,21 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     tools:context=".ui.register.RegisterActivity">
 
-    <EditText
-        android:id="@+id/text_input_barcode"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_text_barcode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:hint="@string/text_barcode"
-        android:inputType="number"
-        android:selectAllOnFocus="true"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="input_barcode" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_input_barcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Usar o leitor"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_text_barcode" />
 
     <TextView
         android:id="@+id/text_description"
@@ -28,7 +45,7 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:text="Produto 001 - descrição"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_barcode"/>
+        app:layout_constraintTop_toBottomOf="@+id/btn_scan"/>
 
     <EditText
         android:id="@+id/text_input_quantities"
@@ -46,7 +63,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_enter_barcode"
         android:layout_width="wrap_content"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/text_button_register"
         app:layout_constraintTop_toBottomOf="@+id/text_input_quantities"
@@ -55,16 +72,14 @@
 
     <ProgressBar
         android:id="@+id/loading"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="center"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:visibility="gone"
         tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/button_enter_barcode"
         app:layout_constraintEnd_toEndOf="@+id/button_enter_barcode"
         app:layout_constraintStart_toStartOf="@+id/button_enter_barcode"
-        app:layout_constraintTop_toTopOf="@+id/button_enter_barcode"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintTop_toTopOf="@+id/button_enter_barcode"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

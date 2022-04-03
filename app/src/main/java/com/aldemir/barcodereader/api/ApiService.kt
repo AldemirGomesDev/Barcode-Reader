@@ -1,6 +1,7 @@
 package com.aldemir.barcodereader.api
 
 import com.aldemir.barcodereader.api.models.*
+import com.aldemir.barcodereader.api.util.BaseResponse
 import com.aldemir.barcodereader.data.Resource
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,21 +10,21 @@ import retrofit2.http.POST
 
 interface ApiService {
 
-    @POST("v1/client/auth/login")
+    @POST("login")
     suspend fun login(
         @Body requestLogin: RequestLogin
-    ): Response<Resource<ResponseLogin>>
+    ): Response<ResponseLogin>
 
-    @GET("v1/client/checkcount")
-    suspend fun checkCount(): Response<Resource<ResponseCheckCount>>
+    @GET("checkcount")
+    suspend fun checkCount(): Response<ResponseCheckCount>
 
-    @GET("v1/client/products")
+    @GET("products")
     suspend fun getProducts(
         @Body requestProduct: RequestProduct
-    ): Response<Resource<ResponseProduct>>
+    ): Response<ResponseProduct>
 
-    @POST("v1/client/register")
+    @POST("register")
     suspend fun register(
         @Body requestRegister: RequestRegister
-    ): Response<Resource<ResponseRegister>>
+    ): Response<ResponseRegister>
 }

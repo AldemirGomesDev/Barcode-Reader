@@ -1,16 +1,20 @@
 package com.aldemir.barcodereader.api.di
 
 import com.aldemir.barcodereader.BuildConfig
-import com.aldemir.barcodereader.api.ApiHelper
-import com.aldemir.barcodereader.api.ApiHelperImpl
-import com.aldemir.barcodereader.api.ApiService
-import com.aldemir.barcodereader.api.SessionManager
+import com.aldemir.barcodereader.api.*
 import com.aldemir.barcodereader.api.models.ResponseLogin
+import com.aldemir.barcodereader.ui.model.UserLogged
 import com.aldemir.barcodereader.util.Constants
+import com.aldemir.barcodereader.util.LogUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,13 +30,22 @@ object RetrofitModule {
 
     @Provides
     fun provideToken(): ResponseLogin {
-        val sessionManager = SessionManager()
-        val token = sessionManager.fetchAuthToken()
-        return if (token != null) {
-            ResponseLogin(token = token)
-        } else {
-            ResponseLogin(token = "")
+        var responseLogin = ResponseLogin()
+        val dataStoreManager = DataStoreManager()
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStoreManager.getFromDataStore().catch { e ->
+               responseLogin = ResponseLogin(token = "")
+            }.collect { userSession ->
+                responseLogin = ResponseLogin(token = userSession.token)
+            }
         }
+        return responseLogin
+//        val token = sessionManager.fetchAuthToken()
+//        return if (token != null) {
+//            ResponseLogin(token = token)
+//        } else {
+//            ResponseLogin(token = "")
+//        }
     }
 
     @Provides
