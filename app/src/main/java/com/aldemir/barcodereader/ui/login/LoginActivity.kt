@@ -1,6 +1,5 @@
 package com.aldemir.barcodereader.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.Observer
 import android.os.Bundle
@@ -9,17 +8,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityLoginBinding
 import com.aldemir.barcodereader.ui.home.MainActivity
+import com.aldemir.barcodereader.util.LogUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
+
+    companion object {
+        const val TAG = "ActivityLogin"
+    }
 
     private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var binding: ActivityLoginBinding
@@ -29,13 +32,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.container.visibility = View.GONE
 
         listeners()
 
         observers()
-
-        loginViewModel.getUserSession()
 
     }
 
@@ -55,17 +55,6 @@ class LoginActivity : AppCompatActivity() {
                 )
             }
 
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            binding.username.text.toString(),
-                            binding.password.text.toString()
-                        )
-                }
-                false
-            }
-
             binding.login.setOnClickListener {
                 binding.loading.visibility = View.VISIBLE
                 loginViewModel.login(binding.username.text.toString(), binding.password.text.toString())
@@ -74,11 +63,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun observers() {
-        loginViewModel.userLogged.observe(this@LoginActivity, Observer { userSession ->
-            if (userSession != null ) {
+        loginViewModel.userSession.observe(this@LoginActivity, Observer { userSession ->
+            LogUtils.info(TAG, "userSession: ${userSession}")
+            if (userSession.statusCode == 200) {
                 startMainActivity()
             } else {
-                binding.container.visibility = View.VISIBLE
+                showLoginFailed(R.string.login_failed)
             }
         })
 
@@ -95,26 +85,6 @@ class LoginActivity : AppCompatActivity() {
                 binding.password.error = getString(loginState.passwordError)
             }
         })
-
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
-
-            binding.loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
-
-        })
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        startMainActivity()
     }
 
     private fun startMainActivity() {
@@ -129,9 +99,6 @@ class LoginActivity : AppCompatActivity() {
     }
 }
 
-/**
- * Extension function to simplify setting an afterTextChanged action to EditText components.
- */
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(editable: Editable?) {

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Barcode Reader</string>
     <string name="image_flash">image flash</string>
-    <string name="capture">Capture</string>
+    <string name="start_counting">Iniciar contagem</string>
 
     <string name="turn_on_flashlight">Turn on Flashlight</string>
     <string name="turn_off_flashlight">Turn off Flashlight</string>
@@ -13,7 +13,7 @@
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="login_failed">"Erro no login, verifique suas credenciais e tente novamente"</string>
     <string name="text_barcode">Código de barras</string>
     <string name="text_button_enter_barcode">Digitar Código</string>
     <string name="text_quantities">Quantidade</string>
@@ -21,4 +21,7 @@
     <string name="invalid_barcode">O Barcode precisa ter mais de 5 caracteres</string>
     <string name="invalid_input">A quantidade é obrigatória</string>
     <string name="message_scan">Posicione o código de barras no leitor</string>
+    <string name="count_not_allowed">Contagem não Permitida!</string>
+    <string name="register_success">Registro enviado com sucesso!</string>
+    <string name="register_error">Erro ao enviar o registro!</string>
 </resources>

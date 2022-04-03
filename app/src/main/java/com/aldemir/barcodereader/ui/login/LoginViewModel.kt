@@ -10,12 +10,9 @@ import com.aldemir.barcodereader.api.DataStoreManager
 import com.aldemir.barcodereader.api.models.RequestLogin
 import com.aldemir.barcodereader.ui.model.UserLogged
 import com.aldemir.barcodereader.domain.usecase.LoginUseCase
-import com.aldemir.barcodereader.ui.home.MainActivity
 import com.aldemir.barcodereader.util.LogUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,11 +25,8 @@ class LoginViewModel @Inject constructor(
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
-
     private val _userSession = MutableLiveData<UserLogged>()
-    val userLogged: LiveData<UserLogged> = _userSession
+    val userSession: LiveData<UserLogged> = _userSession
 
     fun login(username: String, password: String) {
         val requestLogin = RequestLogin(phone = username, password = password)
@@ -41,10 +35,9 @@ class LoginViewModel @Inject constructor(
             if (userLogged != null) {
                 _userSession.run { postValue(userLogged) }
                 saveUserSession(userLogged = userLogged)
+                LogUtils.info(tag = "userSession", message = userLogged!!.token)
             }
-            LogUtils.info(tag = "TestUseCase", message = userLogged!!.token)
         }
-
     }
 
     private fun saveUserSession(userLogged: UserLogged) {
@@ -53,17 +46,17 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun getUserSession() {
-        viewModelScope.launch(Dispatchers.IO) {
-            dataStoreManager.getFromDataStore().catch { e ->
-                LogUtils.error(MainActivity.TAG, e.toString())
-            }.collect { userSession ->
-                _userSession.postValue(userSession)
-                LogUtils.info(MainActivity.TAG, "userLogged: $userSession")
-            }
-
-        }
-    }
+//    fun getUserSession() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            dataStoreManager.getFromDataStore().catch { e ->
+//                LogUtils.error(MainActivity.TAG, e.toString())
+//            }.collect { userSession ->
+//                _userSession.postValue(userSession)
+//                LogUtils.info(MainActivity.TAG, "userLogged: $userSession")
+//            }
+//
+//        }
+//    }
 
     fun loginDataChanged(username: String, password: String) {
         if (!isUserNameValid(username)) {

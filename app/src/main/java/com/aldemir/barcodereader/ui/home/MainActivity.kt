@@ -3,19 +3,14 @@ package com.aldemir.barcodereader.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.aldemir.barcodereader.ui.model.UserLogged
+import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityMainBinding
-import com.aldemir.barcodereader.ui.ScanActivity
 import com.aldemir.barcodereader.ui.login.LoginActivity
 import com.aldemir.barcodereader.ui.register.RegisterActivity
-import com.aldemir.barcodereader.util.Constants
-import com.aldemir.barcodereader.util.LogUtils
-import com.google.zxing.client.android.Intents
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanIntentResult
-import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,15 +20,7 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "return_scan_barcode"
     }
     private lateinit var binding: ActivityMainBinding
-    private lateinit var result: ScanIntentResult
     private val mainViewModel: MainViewModel by viewModels()
-
-    private val zxingActivityResultLauncher = registerForActivityResult(
-        ScanContract()
-    ) { result: ScanIntentResult ->
-        this.result = result
-        getContent()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,37 +29,33 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         listeners()
+
+        observers()
     }
 
     private fun listeners() {
-        binding.btnCapture.setOnClickListener {
-            val options = ScanOptions().setOrientationLocked(false).setCaptureActivity(
-                ScanActivity::class.java
-            ).setCameraId(0)
-            zxingActivityResultLauncher.launch(options)
+        binding.btnStartCounting.setOnClickListener {
+            showLoading()
+            mainViewModel.checkCount()
         }
         binding.btnExit.setOnClickListener {
             startLoginActivity()
         }
     }
 
-    private fun getContent() {
-        if (result.contents == null) {
-            val originalIntent = result.originalIntent
-            if (originalIntent == null) {
-                LogUtils.error(tag = TAG, message = "Cancelled scan")
-            } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                LogUtils.error(tag = TAG, message = "Cancelled scan due to missing camera permission")
+    private fun observers() {
+        mainViewModel.checkCount.observe(this@MainActivity) { checkCountUiModel ->
+            if (checkCountUiModel.status) {
+                startRegisterActivity()
+            } else {
+                Toast.makeText(this, getString(R.string.count_not_allowed), Toast.LENGTH_SHORT).show()
             }
-        } else {
-            LogUtils.info(tag = TAG, message = "Scanned: " + result.contents)
-            startRegisterActivity(result.contents)
+            hideLoading()
         }
     }
 
-    private fun startRegisterActivity(barcode: String) {
+    private fun startRegisterActivity() {
         val intent = Intent(this, RegisterActivity::class.java)
-        intent.putExtra(Constants.KEY_BARCODE, barcode)
         startActivity(intent)
     }
 
@@ -81,5 +64,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(this)
         }
         finish()
+    }
+
+    private fun hideLoading() {
+        binding.loading.visibility = View.GONE
+        binding.btnStartCounting.isEnabled = true
+    }
+    private fun showLoading() {
+        binding.loading.visibility = View.VISIBLE
+        binding.btnStartCounting.isEnabled = false
     }
 }
