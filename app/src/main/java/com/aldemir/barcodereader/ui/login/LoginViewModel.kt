@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import com.aldemir.barcodereader.R
-import com.aldemir.barcodereader.api.DataStoreManager
-import com.aldemir.barcodereader.api.models.RequestLogin
+import com.aldemir.barcodereader.data.api.DataStoreManager
+import com.aldemir.barcodereader.data.api.models.RequestLogin
 import com.aldemir.barcodereader.ui.model.UserLogged
 import com.aldemir.barcodereader.domain.usecase.LoginUseCase
 import com.aldemir.barcodereader.util.LogUtils

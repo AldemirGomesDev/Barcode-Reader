@@ -1,11 +1,9 @@
-package com.aldemir.barcodereader.api.di
+package com.aldemir.barcodereader.data.api.di
 
 import com.aldemir.barcodereader.BuildConfig
-import com.aldemir.barcodereader.api.*
-import com.aldemir.barcodereader.api.models.ResponseLogin
-import com.aldemir.barcodereader.ui.model.UserLogged
+import com.aldemir.barcodereader.data.api.*
+import com.aldemir.barcodereader.data.api.models.ResponseLogin
 import com.aldemir.barcodereader.util.Constants
-import com.aldemir.barcodereader.util.LogUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.aldemir.barcodereader.api.util
+package com.aldemir.barcodereader.data.api.util
 
 class BaseResponse<Data>(
     val products: Data

@@ -52,7 +52,6 @@ class RegisterActivity : AppCompatActivity() {
         listeners()
 
         observers()
-
     }
 
     private fun getContent() {

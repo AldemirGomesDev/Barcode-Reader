@@ -1,4 +1,4 @@
-package com.aldemir.barcodereader.api
+package com.aldemir.barcodereader.data.api
 
 import android.content.Context
 import android.content.SharedPreferences
