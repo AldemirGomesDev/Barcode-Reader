@@ -12,17 +12,18 @@ import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.aldemir.barcodereader.R
+import com.aldemir.barcodereader.data.api.models.RequestRegister
 import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
 import com.aldemir.barcodereader.ui.ScanActivity
-import com.aldemir.barcodereader.ui.home.MainActivity
-import com.aldemir.barcodereader.util.Constants
 import com.aldemir.barcodereader.util.LogUtils
-import com.aldemir.barcodereader.util.Status
+import com.google.android.material.textfield.TextInputLayout
 import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
 
     companion object {
@@ -69,17 +70,24 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun listeners() {
+        binding.layoutTextBarcode.isEndIconVisible = false
         binding.textInputBarcode.setOnFocusChangeListener { _, _ ->
             viewModel.barcodeDataChanged(binding.textInputBarcode.text.toString())
         }
         binding.textInputBarcode.addTextChangedListener {
+            if (it != null) {
+                binding.layoutTextBarcode.isEndIconVisible = it.length >= 5
+            }
             viewModel.barcodeDataChanged(binding.textInputBarcode.text.toString())
         }
         binding.textInputQuantities.addTextChangedListener {
             viewModel.quantityDataChanged(binding.textInputQuantities.text.toString())
         }
         binding.buttonEnterBarcode.setOnClickListener {
-            viewModel.register()
+            viewModel.register(RequestRegister(
+                code = binding.textInputBarcode.text.toString(),
+                quantity = binding.textInputQuantities.text.toString()
+            ))
             showLoading()
         }
         binding.btnScan.setOnClickListener {
@@ -89,20 +97,22 @@ class RegisterActivity : AppCompatActivity() {
             zxingActivityResultLauncher.launch(options)
         }
 
+        binding.layoutTextBarcode.setEndIconOnClickListener {
+            LogUtils.info(TAG, "Clicou em buscar")
+            showMessageToast(message = "Clicou em buscar produto")
+        }
+
     }
 
     private fun observers() {
-        viewModel.news.observe(this@RegisterActivity, Observer { news ->
-            when (news.status) {
-                Status.SUCCESS -> {
+        viewModel.register.observe(this@RegisterActivity, Observer { register ->
+            when (register.statusCode) {
+                200 -> {
                     clearFields()
                     hideLoading()
                     showMessageToast(getString(R.string.register_success))
                 }
-                Status.LOADING -> {
-
-                }
-                Status.ERROR -> {
+                else -> {
                     finish()
                     hideLoading()
                     showMessageToast(getString(R.string.register_error))
