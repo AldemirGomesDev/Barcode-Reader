@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
         binding.username.afterTextChanged {
             loginViewModel.loginDataChanged(
                 binding.username.text.toString(),
-                binding.username.text.toString()
+                binding.password.text.toString()
             )
         }
 

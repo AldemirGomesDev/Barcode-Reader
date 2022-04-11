@@ -68,7 +68,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {
         return if (username.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(username).matches()
@@ -77,7 +76,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 3
     }
