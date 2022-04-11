@@ -16,7 +16,7 @@ interface ApiService {
     @GET("checkcount")
     suspend fun checkCount(): Response<ResponseCheckCount>
 
-    @GET("products")
+    @POST("products")
     suspend fun getProducts(
         @Body requestProduct: RequestProduct
     ): Response<ResponseProduct>

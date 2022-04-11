@@ -1,9 +1,6 @@
 package com.aldemir.barcodereader.data.di
 
-import com.aldemir.barcodereader.data.repository.CheckCountRepository
-import com.aldemir.barcodereader.data.repository.CheckCountRepositoryImpl
-import com.aldemir.barcodereader.data.repository.BarCodeReaderRepository
-import com.aldemir.barcodereader.data.repository.BarCodeReaderRepositoryImpl
+import com.aldemir.barcodereader.data.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,4 +15,7 @@ interface RepositoryModule {
 
     @Binds
     fun bindCheckCountRepository(useCase: CheckCountRepositoryImpl) : CheckCountRepository
+
+    @Binds
+    fun bindProductRepository(useCase: ProductRepositoryImpl) : ProductRepository
 }

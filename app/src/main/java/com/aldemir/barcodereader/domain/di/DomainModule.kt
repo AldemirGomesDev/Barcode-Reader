@@ -19,4 +19,7 @@ interface DomainModule {
 
     @Binds
     fun bindRegisterUseCase(useCase: RegisterUseCaseImpl) : RegisterUseCase
+
+    @Binds
+    fun bindGetProductUseCase(useCase: ProductUseCaseImpl) : ProductUseCase
 }

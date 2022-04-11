@@ -6,19 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.data.Resource
+import com.aldemir.barcodereader.data.api.models.RequestProduct
 import com.aldemir.barcodereader.data.api.models.RequestRegister
+import com.aldemir.barcodereader.domain.model.toProductUiModel
 import com.aldemir.barcodereader.domain.model.toRegisterUiModel
+import com.aldemir.barcodereader.domain.usecase.ProductUseCase
 import com.aldemir.barcodereader.domain.usecase.RegisterUseCase
+import com.aldemir.barcodereader.ui.model.ProductUiModel
 import com.aldemir.barcodereader.ui.model.RegisterUiModel
 import com.aldemir.barcodereader.util.LogUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val productUseCase: ProductUseCase
 ) : ViewModel() {
 
     companion object {
@@ -37,17 +42,21 @@ class RegisterViewModel @Inject constructor(
     private val _register = MutableLiveData<RegisterUiModel>()
     val register: LiveData<RegisterUiModel> = _register
 
-    private val _news = MutableLiveData<Resource<String>>((Resource.loading(null)))
-    var news: LiveData<Resource<String>> = _news
+    private val _product = MutableLiveData<ProductUiModel>()
+    var product: LiveData<ProductUiModel> = _product
 
     fun register(requestRegister: RequestRegister) {
         viewModelScope.launch {
             val result = registerUseCase(requestRegister = requestRegister)
-            LogUtils.debug(tag = TAG, message = "Sucesso - message: ${result.message}")
-            LogUtils.debug(tag = TAG, message = "Sucesso - statusCode: ${result.statusCode}")
             _register.postValue(result.toRegisterUiModel())
-//            delay(3000)
-//            _news.postValue(Resource.success("Sucesso!"))
+        }
+    }
+
+    fun getProduct(requestProduct: RequestProduct) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = productUseCase(requestProduct = requestProduct)
+            LogUtils.debug(tag = TAG, message = "result: ${result.toProductUiModel()}")
+            _product.postValue(result.toProductUiModel())
         }
     }
 

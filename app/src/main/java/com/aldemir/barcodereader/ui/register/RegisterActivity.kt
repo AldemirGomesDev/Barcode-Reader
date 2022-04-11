@@ -12,9 +12,11 @@ import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.aldemir.barcodereader.R
+import com.aldemir.barcodereader.data.api.models.RequestProduct
 import com.aldemir.barcodereader.data.api.models.RequestRegister
 import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
 import com.aldemir.barcodereader.ui.ScanActivity
+import com.aldemir.barcodereader.ui.model.ProductUiModel
 import com.aldemir.barcodereader.util.LogUtils
 import com.google.android.material.textfield.TextInputLayout
 import com.google.zxing.client.android.Intents
@@ -27,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
 
     companion object {
-        const val TAG = "return_scan_barcode"
+        const val TAG = "featureRegister"
     }
 
     private lateinit var binding: ActivityRegisterBinding
@@ -64,7 +66,8 @@ class RegisterActivity : AppCompatActivity() {
                 LogUtils.error(tag = TAG, message = "Cancelled scan due to missing camera permission")
             }
         } else {
-            binding.textInputBarcode.setText(result.contents)
+            setBarcode(result.contents)
+            getProduct()
             LogUtils.info(tag = TAG, message = "Scanned: " + result.contents)
         }
     }
@@ -98,27 +101,38 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         binding.layoutTextBarcode.setEndIconOnClickListener {
-            LogUtils.info(TAG, "Clicou em buscar")
-            showMessageToast(message = "Clicou em buscar produto")
+            showLoadingProduct()
+            getProduct()
         }
 
     }
 
     private fun observers() {
         viewModel.register.observe(this@RegisterActivity, Observer { register ->
+            hideLoading()
+            clearFields()
             when (register.statusCode) {
                 200 -> {
-                    clearFields()
-                    hideLoading()
                     showMessageToast(getString(R.string.register_success))
                 }
                 else -> {
                     finish()
-                    hideLoading()
                     showMessageToast(getString(R.string.register_error))
                 }
             }
         })
+        viewModel.product.observe(this@RegisterActivity) { product ->
+            hideLoadingProduct()
+            when (product.statusCode) {
+                200 -> {
+                    setDescriptionProduct(product = product)
+                    showMessageToast(message = product.message)
+                }
+                else -> {
+                    showMessageToast(message = "Error: ${product.message}")
+                }
+            }
+        }
         viewModel.registerForm.observe(this@RegisterActivity, Observer { formState ->
             if(formState.barcodeError != null) {
                 binding.textInputBarcode.error = getString(formState.barcodeError)
@@ -138,6 +152,18 @@ class RegisterActivity : AppCompatActivity() {
         })
     }
 
+    private fun getProduct() {
+        viewModel.getProduct(RequestProduct(code = binding.textInputBarcode.text.toString()))
+    }
+
+    private fun setBarcode(barcode: String){
+        binding.textInputBarcode.setText(barcode)
+    }
+
+    private fun setDescriptionProduct(product: ProductUiModel){
+        binding.textDescription.text = product.description
+    }
+
     private fun clearFields() {
         LogUtils.error(tag = TAG, message = "clearFields")
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -155,6 +181,14 @@ class RegisterActivity : AppCompatActivity() {
     private fun showLoading() {
         binding.loading.visibility = View.VISIBLE
         binding.buttonEnterBarcode.isEnabled = false
+    }
+
+    private fun hideLoadingProduct() {
+        binding.loadingProduct.visibility = View.GONE
+    }
+
+    private fun showLoadingProduct() {
+        binding.loadingProduct.visibility = View.VISIBLE
     }
 
     private fun showMessageToast(message: String) {
