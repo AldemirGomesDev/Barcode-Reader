@@ -57,25 +57,26 @@ class LoginActivity : AppCompatActivity() {
 
             binding.login.setOnClickListener {
                 binding.loading.visibility = View.VISIBLE
-                loginViewModel.login(binding.username.text.toString(), binding.password.text.toString())
+                loginViewModel.login(
+                    binding.username.text.toString(),
+                    binding.password.text.toString()
+                )
             }
         }
     }
 
     private fun observers() {
-        loginViewModel.userSession.observe(this@LoginActivity, Observer { userSession ->
-            LogUtils.info(TAG, "userSession: ${userSession}")
+        loginViewModel.userSession.observe(this) { userSession ->
+            LogUtils.info(TAG, "userSession: $userSession")
             if (userSession.statusCode == 200) {
                 startMainActivity()
             } else {
                 showLoginFailed(R.string.login_failed)
             }
-        })
+        }
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
-            val loginState = it ?: return@Observer
+        loginViewModel.loginFormState.observe(this) { loginState ->
 
-            // disable login button unless both username / password is valid
             binding.login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
@@ -84,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
             if (loginState.passwordError != null) {
                 binding.password.error = getString(loginState.passwordError)
             }
-        })
+        }
     }
 
     private fun startMainActivity() {

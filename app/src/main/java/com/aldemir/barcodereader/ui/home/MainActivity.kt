@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observers() {
-        mainViewModel.checkCount.observe(this@MainActivity) { checkCountUiModel ->
+        mainViewModel.checkCount.observe(this) { checkCountUiModel ->
             if (checkCountUiModel.status) {
                 startRegisterActivity()
             } else {

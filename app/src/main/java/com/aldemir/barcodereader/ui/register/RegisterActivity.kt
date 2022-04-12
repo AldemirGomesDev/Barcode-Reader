@@ -112,7 +112,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun observers() {
-        viewModel.register.observe(this@RegisterActivity, Observer { register ->
+        viewModel.register.observe(this@RegisterActivity) { register ->
             hideLoading()
             clearFields()
             when (register.statusCode) {
@@ -124,7 +124,7 @@ class RegisterActivity : AppCompatActivity() {
                     showMessageToast(getString(R.string.register_error))
                 }
             }
-        })
+        }
         viewModel.product.observe(this@RegisterActivity) { product ->
             hideLoadingProduct()
             when (product.statusCode) {
@@ -137,7 +137,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         }
-        viewModel.registerForm.observe(this@RegisterActivity, Observer { formState ->
+        viewModel.registerForm.observe(this@RegisterActivity) { formState ->
             if (formState.barcodeError != null) {
                 binding.textInputBarcode.error = getString(formState.barcodeError)
             } else {
@@ -150,11 +150,11 @@ class RegisterActivity : AppCompatActivity() {
                 binding.textInputQuantities.error = null
 
             }
-        })
+        }
 
-        viewModel.buttonIsEnabled.observe(this@RegisterActivity, Observer { isEnabled ->
+        viewModel.buttonIsEnabled.observe(this@RegisterActivity) { isEnabled ->
             binding.buttonEnterBarcode.isEnabled = isEnabled
-        })
+        }
     }
 
     private fun getProduct() {
@@ -201,15 +201,3 @@ class RegisterActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
-
-//fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-//    this.addTextChangedListener(object : TextWatcher {
-//        override fun afterTextChanged(editable: Editable?) {
-//            afterTextChanged.invoke(editable.toString())
-//        }
-//
-//        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-//
-//        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-//    })
-//}
