@@ -13,25 +13,25 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityLoginBinding
+import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
+import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.home.MainActivity
 import com.aldemir.barcodereader.util.LogUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
     companion object {
         const val TAG = "ActivityLogin"
     }
 
     private val loginViewModel: LoginViewModel by viewModels()
-    private lateinit var binding: ActivityLoginBinding
+
+    override fun getViewBinding() = ActivityLoginBinding.inflate(layoutInflater)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         listeners()
 
@@ -94,10 +94,6 @@ class LoginActivity : AppCompatActivity() {
         intent.putExtra("keyIdentifier", "value")
         startActivity(intent)
     }
-
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
-    }
 }
 
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
@@ -105,9 +101,7 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         override fun afterTextChanged(editable: Editable?) {
             afterTextChanged.invoke(editable.toString())
         }
-
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }

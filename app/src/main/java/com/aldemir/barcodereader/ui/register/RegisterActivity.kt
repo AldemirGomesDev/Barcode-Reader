@@ -2,24 +2,20 @@ package com.aldemir.barcodereader.ui.register
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.data.api.models.RequestProduct
 import com.aldemir.barcodereader.data.api.models.RequestRegister
+import com.aldemir.barcodereader.databinding.ActivityMainBinding
 import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
+import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.ScanActivity
 import com.aldemir.barcodereader.ui.login.afterTextChanged
 import com.aldemir.barcodereader.ui.model.ProductUiModel
 import com.aldemir.barcodereader.util.LogUtils
-import com.google.android.material.textfield.TextInputLayout
 import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -27,13 +23,14 @@ import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
     companion object {
         const val TAG = "featureRegister"
     }
 
-    private lateinit var binding: ActivityRegisterBinding
+    override fun getViewBinding() = ActivityRegisterBinding.inflate(layoutInflater)
+
     private lateinit var result: ScanIntentResult
     private val viewModel: RegisterViewModel by viewModels()
 
@@ -46,8 +43,6 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.textInputBarcode.clearFocus()
         binding.container.requestFocus()
@@ -180,13 +175,11 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun hideLoading() {
-        binding.loading.visibility = View.GONE
-        binding.buttonEnterBarcode.isEnabled = true
+        hideLoading(binding.loading, binding.buttonEnterBarcode)
     }
 
     private fun showLoading() {
-        binding.loading.visibility = View.VISIBLE
-        binding.buttonEnterBarcode.isEnabled = false
+        showLoading(binding.loading, binding.buttonEnterBarcode)
     }
 
     private fun hideLoadingProduct() {
@@ -195,9 +188,5 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun showLoadingProduct() {
         binding.loadingProduct.visibility = View.VISIBLE
-    }
-
-    private fun showMessageToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
