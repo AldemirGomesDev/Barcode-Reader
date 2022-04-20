@@ -6,14 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.data.Resource
+import com.aldemir.barcodereader.data.api.models.RequestProduct
+import com.aldemir.barcodereader.data.api.models.RequestRegister
+import com.aldemir.barcodereader.domain.model.toProductUiModel
+import com.aldemir.barcodereader.domain.model.toRegisterUiModel
+import com.aldemir.barcodereader.domain.usecase.ProductUseCase
+import com.aldemir.barcodereader.domain.usecase.RegisterUseCase
+import com.aldemir.barcodereader.ui.model.ProductUiModel
+import com.aldemir.barcodereader.ui.model.RegisterUiModel
 import com.aldemir.barcodereader.util.LogUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val registerUseCase: RegisterUseCase,
+    private val productUseCase: ProductUseCase
+) : ViewModel() {
 
     companion object {
         private const val TAG = "featureRegister"
@@ -28,16 +39,24 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
     private val _buttonIsEnabled = MutableLiveData<Boolean>()
     val buttonIsEnabled: LiveData<Boolean> = _buttonIsEnabled
 
-    private val _news = MutableLiveData<Resource<String>>((Resource.loading(null)))
-    var news: LiveData<Resource<String>> = _news
+    private val _register = MutableLiveData<RegisterUiModel>()
+    val register: LiveData<RegisterUiModel> = _register
 
-    fun register() {
+    private val _product = MutableLiveData<ProductUiModel>()
+    var product: LiveData<ProductUiModel> = _product
+
+    fun register(requestRegister: RequestRegister) {
         viewModelScope.launch {
-            LogUtils.debug(tag = TAG, message = "Registrado com Sucesso!")
-            LogUtils.info(tag = TAG, message = "Registrado com Sucesso!")
-            LogUtils.warning(tag = TAG, message = "Registrado com Sucesso!")
-            delay(3000)
-            _news.postValue(Resource.success("Sucesso!"))
+            val result = registerUseCase(requestRegister = requestRegister)
+            _register.postValue(result.toRegisterUiModel())
+        }
+    }
+
+    fun getProduct(requestProduct: RequestProduct) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = productUseCase(requestProduct = requestProduct)
+            LogUtils.debug(tag = TAG, message = "result: ${result.toProductUiModel()}")
+            _product.postValue(result.toProductUiModel())
         }
     }
 
@@ -64,7 +83,7 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun isBarcodeValid(barcode: String): Boolean {
-        return barcode.length > 5
+        return barcode.length > 4
     }
 
     private fun isQuantityValid(quantity: String): Boolean {

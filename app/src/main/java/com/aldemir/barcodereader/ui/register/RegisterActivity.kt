@@ -2,34 +2,35 @@ package com.aldemir.barcodereader.ui.register
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
 import com.aldemir.barcodereader.R
+import com.aldemir.barcodereader.data.api.models.RequestProduct
+import com.aldemir.barcodereader.data.api.models.RequestRegister
+import com.aldemir.barcodereader.databinding.ActivityMainBinding
 import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
+import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.ScanActivity
-import com.aldemir.barcodereader.ui.home.MainActivity
-import com.aldemir.barcodereader.util.Constants
+import com.aldemir.barcodereader.ui.login.afterTextChanged
+import com.aldemir.barcodereader.ui.model.ProductUiModel
 import com.aldemir.barcodereader.util.LogUtils
-import com.aldemir.barcodereader.util.Status
 import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import dagger.hilt.android.AndroidEntryPoint
 
-class RegisterActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
     companion object {
-        const val TAG = "return_scan_barcode"
+        const val TAG = "featureRegister"
     }
 
-    private lateinit var binding: ActivityRegisterBinding
+    override fun getViewBinding() = ActivityRegisterBinding.inflate(layoutInflater)
+
     private lateinit var result: ScanIntentResult
     private val viewModel: RegisterViewModel by viewModels()
 
@@ -42,8 +43,6 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.textInputBarcode.clearFocus()
         binding.container.requestFocus()
@@ -60,26 +59,37 @@ class RegisterActivity : AppCompatActivity() {
             if (originalIntent == null) {
                 LogUtils.error(tag = TAG, message = "Cancelled scan")
             } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                LogUtils.error(tag = TAG, message = "Cancelled scan due to missing camera permission")
+                LogUtils.error(
+                    tag = TAG,
+                    message = "Cancelled scan due to missing camera permission"
+                )
             }
         } else {
-            binding.textInputBarcode.setText(result.contents)
+            setBarcode(result.contents)
+            getProduct()
             LogUtils.info(tag = TAG, message = "Scanned: " + result.contents)
         }
     }
 
     private fun listeners() {
+        binding.layoutTextBarcode.isEndIconVisible = false
         binding.textInputBarcode.setOnFocusChangeListener { _, _ ->
             viewModel.barcodeDataChanged(binding.textInputBarcode.text.toString())
         }
-        binding.textInputBarcode.addTextChangedListener {
+        binding.textInputBarcode.afterTextChanged {
+            binding.layoutTextBarcode.isEndIconVisible = it.length >= 5
             viewModel.barcodeDataChanged(binding.textInputBarcode.text.toString())
         }
-        binding.textInputQuantities.addTextChangedListener {
+        binding.textInputQuantities.afterTextChanged {
             viewModel.quantityDataChanged(binding.textInputQuantities.text.toString())
         }
         binding.buttonEnterBarcode.setOnClickListener {
-            viewModel.register()
+            viewModel.register(
+                RequestRegister(
+                    code = binding.textInputBarcode.text.toString(),
+                    quantity = binding.textInputQuantities.text.toString()
+                )
+            )
             showLoading()
         }
         binding.btnScan.setOnClickListener {
@@ -89,28 +99,41 @@ class RegisterActivity : AppCompatActivity() {
             zxingActivityResultLauncher.launch(options)
         }
 
+        binding.layoutTextBarcode.setEndIconOnClickListener {
+            showLoadingProduct()
+            getProduct()
+        }
+
     }
 
     private fun observers() {
-        viewModel.news.observe(this@RegisterActivity, Observer { news ->
-            when (news.status) {
-                Status.SUCCESS -> {
-                    clearFields()
-                    hideLoading()
+        viewModel.register.observe(this@RegisterActivity) { register ->
+            hideLoading()
+            clearFields()
+            when (register.statusCode) {
+                200 -> {
                     showMessageToast(getString(R.string.register_success))
                 }
-                Status.LOADING -> {
-
-                }
-                Status.ERROR -> {
+                else -> {
                     finish()
-                    hideLoading()
                     showMessageToast(getString(R.string.register_error))
                 }
             }
-        })
-        viewModel.registerForm.observe(this@RegisterActivity, Observer { formState ->
-            if(formState.barcodeError != null) {
+        }
+        viewModel.product.observe(this@RegisterActivity) { product ->
+            hideLoadingProduct()
+            when (product.statusCode) {
+                200 -> {
+                    setDescriptionProduct(product = product)
+                    showMessageToast(message = product.message)
+                }
+                else -> {
+                    showMessageToast(message = "Error: ${product.message}")
+                }
+            }
+        }
+        viewModel.registerForm.observe(this@RegisterActivity) { formState ->
+            if (formState.barcodeError != null) {
                 binding.textInputBarcode.error = getString(formState.barcodeError)
             } else {
                 binding.textInputBarcode.error = null
@@ -120,12 +143,25 @@ class RegisterActivity : AppCompatActivity() {
                 binding.textInputQuantities.error = getString(formState.quantityError)
             } else {
                 binding.textInputQuantities.error = null
-            }
-        })
 
-        viewModel.buttonIsEnabled.observe(this@RegisterActivity, Observer { isEnabled ->
+            }
+        }
+
+        viewModel.buttonIsEnabled.observe(this@RegisterActivity) { isEnabled ->
             binding.buttonEnterBarcode.isEnabled = isEnabled
-        })
+        }
+    }
+
+    private fun getProduct() {
+        viewModel.getProduct(RequestProduct(code = binding.textInputBarcode.text.toString()))
+    }
+
+    private fun setBarcode(barcode: String) {
+        binding.textInputBarcode.setText(barcode)
+    }
+
+    private fun setDescriptionProduct(product: ProductUiModel) {
+        binding.textDescription.text = product.description
     }
 
     private fun clearFields() {
@@ -135,31 +171,22 @@ class RegisterActivity : AppCompatActivity() {
         binding.textInputQuantities.text!!.clear()
         binding.textDescription.text = ""
         binding.textInputBarcode.clearFocus()
-        binding.container.requestFocus()
+        binding.container.clearFocus()
     }
 
     private fun hideLoading() {
-        binding.loading.visibility = View.GONE
-        binding.buttonEnterBarcode.isEnabled = true
+        hideLoading(binding.loading, binding.buttonEnterBarcode)
     }
+
     private fun showLoading() {
-        binding.loading.visibility = View.VISIBLE
-        binding.buttonEnterBarcode.isEnabled = false
+        showLoading(binding.loading, binding.buttonEnterBarcode)
     }
 
-    private fun showMessageToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    private fun hideLoadingProduct() {
+        binding.loadingProduct.visibility = View.GONE
     }
-}
 
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
+    private fun showLoadingProduct() {
+        binding.loadingProduct.visibility = View.VISIBLE
+    }
 }

@@ -1,15 +1,15 @@
-package com.aldemir.barcodereader.data.api.models
+package com.aldemir.barcodereader.domain.model
 
-import com.aldemir.barcodereader.domain.model.Product
+import com.aldemir.barcodereader.ui.model.ProductUiModel
 
-data class ResponseProduct(
+data class Product(
     var code: String = "",
     var description: String = "",
     var message: String = "",
     var statusCode: Int = 0
 )
 
-fun ResponseProduct.toProduct() = Product(
+fun Product.toProductUiModel() = ProductUiModel(
     code = this.code,
     description = this.description,
     message = this.message,

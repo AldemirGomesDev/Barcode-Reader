@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../.gradle/caches/transforms-3/e01dfedf22c4fb14d989265ba7bf9da9/transformed/zxing-android-embedded-4.3.0/res/layout/zxing_capture.xml" value="0.19270833333333334" />
         <entry key="app/src/main/res/layout-w1240dp/activity_login.xml" value="0.2605442176870748" />
+        <entry key="app/src/main/res/layout/activity_base.xml" value="0.3536458333333333" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.3692708333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3692708333333333" />
