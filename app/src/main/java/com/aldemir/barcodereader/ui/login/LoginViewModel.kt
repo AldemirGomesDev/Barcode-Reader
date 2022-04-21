@@ -35,7 +35,7 @@ class LoginViewModel @Inject constructor(
             if (userLogged != null) {
                 _userSession.run { postValue(userLogged) }
                 saveUserSession(userLogged = userLogged)
-                LogUtils.info(tag = "userSession", message = userLogged!!.token)
+                LogUtils.info(tag = "userSession", message = userLogged.token)
             }
         }
     }

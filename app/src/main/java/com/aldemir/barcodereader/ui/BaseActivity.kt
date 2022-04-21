@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import com.aldemir.barcodereader.util.LogUtils
 import com.google.android.material.button.MaterialButton
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
@@ -23,24 +21,24 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    fun hideLoading(loading: ProgressBar, btnStart: MaterialButton) {
-        LogUtils.info(message = "hideLoading")
+    fun hideLoading(loading: ProgressBar) {
         loading.visibility = View.GONE
-        btnStart.isEnabled = true
     }
 
-    fun showLoading(loading: ProgressBar, btnStart: MaterialButton) {
-        LogUtils.info(message = "showLoading")
+    fun showLoading(loading: ProgressBar) {
         loading.visibility = View.VISIBLE
-        btnStart.isEnabled = false
+    }
+
+    fun disableButton(button: MaterialButton) {
+        button.isEnabled = false
+    }
+
+    fun enableButton(button: MaterialButton) {
+        button.isEnabled = true
     }
 
     fun showMessageToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
 
 }

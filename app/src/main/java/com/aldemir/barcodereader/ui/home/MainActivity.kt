@@ -1,12 +1,11 @@
 package com.aldemir.barcodereader.ui.home
 
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityMainBinding
+import com.aldemir.barcodereader.extensions.openActivity
 import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.login.LoginActivity
 import com.aldemir.barcodereader.ui.register.RegisterActivity
@@ -15,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity() : BaseActivity<ActivityMainBinding>() {
+class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     companion object {
         const val TAG = "return_scan_barcode"
@@ -35,11 +34,13 @@ class MainActivity() : BaseActivity<ActivityMainBinding>() {
     private fun listeners() {
 
         binding.btnStartCounting.setOnClickListener {
-            showLoading(binding.loading, binding.btnStartCounting)
+            showLoading(binding.loading)
+            disableButton(binding.btnStartCounting)
             mainViewModel.checkCount()
         }
         binding.btnExit.setOnClickListener {
-            startLoginActivity()
+            openActivity(LoginActivity::class.java)
+            finish()
         }
     }
 
@@ -47,24 +48,13 @@ class MainActivity() : BaseActivity<ActivityMainBinding>() {
         mainViewModel.checkCount.observe(this) { checkCountUiModel ->
             if (checkCountUiModel.status) {
                 LogUtils.info(TAG, "Call register activity")
-                startRegisterActivity()
+                openActivity(RegisterActivity::class.java)
             } else {
-                Toast.makeText(this, getString(R.string.count_not_allowed), Toast.LENGTH_SHORT).show()
+                showMessageToast(message = getString(R.string.count_not_allowed))
             }
-            hideLoading(binding.loading, binding.btnStartCounting)
+            hideLoading(binding.loading)
+            enableButton(binding.btnStartCounting)
         }
-    }
-
-    private fun startRegisterActivity() {
-        val intent = Intent(this, RegisterActivity::class.java)
-        startActivity(intent)
-    }
-
-    private fun startLoginActivity() {
-        Intent(this, LoginActivity::class.java).apply {
-            startActivity(this)
-        }
-        finish()
     }
 
 }

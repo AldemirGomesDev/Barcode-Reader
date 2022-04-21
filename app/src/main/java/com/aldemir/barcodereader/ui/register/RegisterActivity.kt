@@ -1,19 +1,15 @@
 package com.aldemir.barcodereader.ui.register
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.data.api.models.RequestProduct
 import com.aldemir.barcodereader.data.api.models.RequestRegister
-import com.aldemir.barcodereader.databinding.ActivityMainBinding
 import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
+import com.aldemir.barcodereader.extensions.afterTextChanged
 import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.ScanActivity
-import com.aldemir.barcodereader.ui.login.afterTextChanged
 import com.aldemir.barcodereader.ui.model.ProductUiModel
 import com.aldemir.barcodereader.util.LogUtils
 import com.google.zxing.client.android.Intents
@@ -90,7 +86,8 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                     quantity = binding.textInputQuantities.text.toString()
                 )
             )
-            showLoading()
+            showLoading(binding.loading)
+            disableButton(binding.buttonEnterBarcode)
         }
         binding.btnScan.setOnClickListener {
             val options = ScanOptions().setOrientationLocked(false).setCaptureActivity(
@@ -100,7 +97,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
         }
 
         binding.layoutTextBarcode.setEndIconOnClickListener {
-            showLoadingProduct()
+            showLoading(binding.loadingProduct)
             getProduct()
         }
 
@@ -108,7 +105,8 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
     private fun observers() {
         viewModel.register.observe(this@RegisterActivity) { register ->
-            hideLoading()
+            hideLoading(binding.loading)
+            enableButton(binding.buttonEnterBarcode)
             clearFields()
             when (register.statusCode) {
                 200 -> {
@@ -121,7 +119,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
             }
         }
         viewModel.product.observe(this@RegisterActivity) { product ->
-            hideLoadingProduct()
+            hideLoading(binding.loadingProduct)
             when (product.statusCode) {
                 200 -> {
                     setDescriptionProduct(product = product)
@@ -174,19 +172,4 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
         binding.container.clearFocus()
     }
 
-    private fun hideLoading() {
-        hideLoading(binding.loading, binding.buttonEnterBarcode)
-    }
-
-    private fun showLoading() {
-        showLoading(binding.loading, binding.buttonEnterBarcode)
-    }
-
-    private fun hideLoadingProduct() {
-        binding.loadingProduct.visibility = View.GONE
-    }
-
-    private fun showLoadingProduct() {
-        binding.loadingProduct.visibility = View.VISIBLE
-    }
 }

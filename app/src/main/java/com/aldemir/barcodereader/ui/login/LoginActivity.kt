@@ -1,22 +1,15 @@
 package com.aldemir.barcodereader.ui.login
 
-import android.content.Intent
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityLoginBinding
-import com.aldemir.barcodereader.databinding.ActivityRegisterBinding
+import com.aldemir.barcodereader.extensions.afterTextChanged
+import com.aldemir.barcodereader.extensions.openActivity
 import com.aldemir.barcodereader.ui.BaseActivity
 import com.aldemir.barcodereader.ui.home.MainActivity
 import com.aldemir.barcodereader.util.LogUtils
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,8 +48,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                 )
             }
 
-            binding.login.setOnClickListener {
-                binding.loading.visibility = View.VISIBLE
+            binding.btnLogin.setOnClickListener {
+                showLoading(binding.loading)
+                disableButton(binding.btnLogin as MaterialButton)
                 loginViewModel.login(
                     binding.username.text.toString(),
                     binding.password.text.toString()
@@ -68,16 +62,19 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
     private fun observers() {
         loginViewModel.userSession.observe(this) { userSession ->
             LogUtils.info(TAG, "userSession: $userSession")
+            hideLoading(binding.loading)
             if (userSession.statusCode == 200) {
-                startMainActivity()
+                openActivity(MainActivity::class.java)
+                finish()
             } else {
-                showLoginFailed(R.string.login_failed)
+                enableButton(binding.btnLogin as MaterialButton)
+                showMessageToast(getString(R.string.login_failed))
             }
         }
 
         loginViewModel.loginFormState.observe(this) { loginState ->
 
-            binding.login.isEnabled = loginState.isDataValid
+            binding.btnLogin.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
                 binding.username.error = getString(loginState.usernameError)
@@ -87,21 +84,4 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             }
         }
     }
-
-    private fun startMainActivity() {
-        finish()
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("keyIdentifier", "value")
-        startActivity(intent)
-    }
-}
-
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
 }
