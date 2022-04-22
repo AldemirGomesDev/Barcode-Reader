@@ -1,6 +1,7 @@
 package com.aldemir.barcodereader.ui.login
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import com.aldemir.barcodereader.R
 import com.aldemir.barcodereader.databinding.ActivityLoginBinding
@@ -26,10 +27,19 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        addInitialDataListener()
+
         listeners()
 
         observers()
 
+    }
+
+    private fun addInitialDataListener() {
+        val content: View = findViewById(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener {
+            return@addOnPreDrawListener loginViewModel.isAppReady.value ?: false
+        }
     }
 
     private fun listeners() {

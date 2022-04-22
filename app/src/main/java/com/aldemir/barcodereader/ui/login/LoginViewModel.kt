@@ -21,12 +21,21 @@ class LoginViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
+    private val _isAppReady = MutableLiveData(false)
+    val isAppReady: LiveData<Boolean> = _isAppReady
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _userSession = MutableLiveData<UserLogged>()
     val userSession: LiveData<UserLogged> = _userSession
+
+    init {
+        viewModelScope.launch {
+            delay(3000)
+            _isAppReady.postValue(true)
+        }
+    }
 
     fun login(username: String, password: String) {
         val requestLogin = RequestLogin(phone = username, password = password)
